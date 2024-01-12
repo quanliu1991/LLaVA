@@ -1,0 +1,25 @@
+version: '3'
+services:
+  llava_baseline:
+    image: registry.linker.cc/linker/llava_baseline:0.0.0
+    ports:
+          - "8801:8000"
+    tty: true
+    volumes:
+          - /data3/lq/projects/vllm/llm_models:/app/llm_models
+    container_name: llava_baseline_test
+    restart: always
+    deploy:
+      resources:
+          reservations:
+              devices:
+                  - driver: nvidia
+                    device_ids: ['0']
+                    capabilities: [gpu]
+    networks:
+      - llava_test
+networks:
+  llava_test:
+    external:
+      name: vql-factory
+

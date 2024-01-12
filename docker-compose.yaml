@@ -1,0 +1,26 @@
+version: '3'
+services:
+  omchat_llava:
+    image: llava_profromance_base_test:v0.0.0 #nvidia/cuda:12.1.0-devel-ubuntu22.04
+    ports:
+          - "8800:8000"
+          - "8822:22"
+    tty: true
+    volumes:
+          - /data3/lq/projects/vllm:/app
+    container_name: ombot_omchat_llava_v35
+    restart: always
+    deploy:
+      resources:
+          reservations:
+              devices:
+                  - driver: nvidia
+                    device_ids: ['0']
+                    capabilities: [gpu]
+    networks:
+      - llava_test
+networks:
+  llava_test:
+    external:
+      name: vql-factory
+
