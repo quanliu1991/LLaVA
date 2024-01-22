@@ -1,7 +1,7 @@
 version: '3'
 services:
   omchat_llava:
-    image: llava_profromance_base_test:v0.0.0 #nvidia/cuda:12.1.0-devel-ubuntu22.04
+    image: llava_profromance_base_test:v0.0.0b #nvidia/cuda:12.1.0-devel-ubuntu22.04
     ports:
           - "8800:8000"
           - "8822:22"
