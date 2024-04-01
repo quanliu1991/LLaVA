@@ -349,12 +349,12 @@ class Engine:
                 if image:
                     origin_input_token_len = input_ids.shape[-1]
                     if input_tokens_number < origin_input_token_len:
-                        input_ids = input_ids[:, :(input_tokens_number-image_token_len)]
+                            input_ids = input_ids[:, :(input_tokens_number-image_token_len)]
                     else:
                         input_ids = torch.nn.functional.pad(input_ids,
-                                                            (0, input_tokens_number - origin_input_token_len-image_token_len))
+                                                            (0, int(input_tokens_number - origin_input_token_len-image_token_len)),"constant",6000)
                     logger.warning(
-                        f"profromance banchmark input tokens {origin_input_token_len} -> {len(input_ids)}")
+                        f"profromance banchmark input tokens {origin_input_token_len} -> {input_ids.shape[-1]}")
 
                 else:
                     origin_input_token_len = input_ids.shape[-1]
@@ -363,7 +363,7 @@ class Engine:
                     else:
                         input_ids = torch.nn.functional.pad(input_ids, (0,input_tokens_number - origin_input_token_len))
                     logger.warning(
-                        f"profromance banchmark input tokens {origin_input_token_len} -> {len(input_ids)}")
+                        f"profromance banchmark input tokens {origin_input_token_len} -> {input_ids.shape[-1]}")
 
             stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
             keywords = []

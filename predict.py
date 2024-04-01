@@ -81,7 +81,7 @@ class Predictor(BasePredictor):
         for weight in weights:
             download_weights(weight["src"], weight["dest"], weight["files"])
         disable_torch_init()
-    
+
         self.tokenizer, self.model, self.image_processor, self.context_len = load_pretrained_model("liuhaotian/llava-v1.5-13b", model_name="llava-v1.5-13b", model_base=None, load_8bit=False, load_4bit=False)
 
     def predict(
@@ -93,28 +93,28 @@ class Predictor(BasePredictor):
         max_tokens: int = Input(description="Maximum number of tokens to generate. A word is generally 2-3 tokens", default=1024, ge=0),
     ) -> ConcatenateIterator[str]:
         """Run a single prediction on the model"""
-    
+
         conv_mode = "llava_v1"
         conv = conv_templates[conv_mode].copy()
-    
+
         image_data = load_image(str(image))
         image_tensor = self.image_processor.preprocess(image_data, return_tensors='pt')['pixel_values'].half().cuda()
-    
+
         # loop start
-    
+
         # just one turn, always prepend image token
         inp = DEFAULT_IMAGE_TOKEN + '\n' + prompt
         conv.append_message(conv.roles[0], inp)
 
         conv.append_message(conv.roles[1], None)
         prompt = conv.get_prompt()
-    
+
         input_ids = tokenizer_image_token(prompt, self.tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).cuda()
         stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
         keywords = [stop_str]
         stopping_criteria = KeywordsStoppingCriteria(keywords, self.tokenizer, input_ids)
         streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True, timeout=20.0)
-    
+
         with torch.inference_mode():
             thread = Thread(target=self.model.generate, kwargs=dict(
                 inputs=input_ids,
@@ -145,7 +145,7 @@ class Predictor(BasePredictor):
             if prepend_space:
                 yield " "
             thread.join()
-    
+
 
 def load_image(image_file):
     if image_file.startswith('http') or image_file.startswith('https'):
